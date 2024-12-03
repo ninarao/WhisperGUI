@@ -5,5 +5,5 @@ dependencies =[
     'PySimpleGUI',
 ]
 
-[project.scripts]
+[project.gui-scripts]
 WhisperGUI = "WhisperGUI:main"
