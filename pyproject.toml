@@ -1,0 +1,9 @@
+[project]
+name = "WhisperGUI"
+version = '0.0.1'
+dependencies =[
+    'PySimpleGUI',
+]
+
+[project.gui-scripts]
+WhisperGUI = "WhisperGUI:main"
