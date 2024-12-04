@@ -14,7 +14,7 @@
     * Windows:
       `venv\scripts\activate`
 * Install Package
-  `python -m pip install .
+  `python -m pip install .`
 
 ## Configure development environment
 * Unix based (Mac or Linux):
