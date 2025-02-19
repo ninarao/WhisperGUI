@@ -10,7 +10,7 @@ def main():
                 [sg.Input(key='-DEST-'), sg.Button('Folder')],
                 [sg.Text("Select Whisper model (larger = more accurate results but longer processing time)")],
                 [sg.Combo(['tiny', 'small', 'medium', 'large'], default_value='small', key='-MODEL-')],
-                [sg.Text("Select Language (if none selected, Whisper will detect language from first 30 seconds)")],
+                [sg.Text("Select language (if none selected, Whisper will detect language from first 30 seconds)")],
                 [sg.Combo(['', 'English', 'Spanish', 'Korean'], default_value='', key='-LANG-')],
                 [sg.Text("Transcribe to same language or translate to English (default is transcribe)")],
                 [sg.Combo(['transcribe', 'translate'], default_value='transcribe', key='-TASK-')],
