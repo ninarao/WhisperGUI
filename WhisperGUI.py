@@ -4,11 +4,17 @@ import subprocess
 def main():
     # Define the window's contents
     layout = [
-                [sg.Text("Select the media file")],
+                [sg.Text("Select the media file (ensure file path does not have spaces)")],
                 [sg.Input(key='-INPUT-'), sg.Button('Browse')],
-                [sg.Text("Select the output folder")],
+                [sg.Text("Select the output folder (ensure file path does not have spaces)")],
                 [sg.Input(key='-DEST-'), sg.Button('Folder')],
-                [sg.Button(('Go'), key='-RUN-', visible=False)],
+                [sg.Text("Select Whisper model (larger = more accurate results but longer processing time)")],
+                [sg.Combo(['tiny', 'small', 'medium', 'large'], default_value='small', key='-MODEL-')],
+                [sg.Text("Select language (if none selected, Whisper will detect language from first 30 seconds)")],
+                [sg.Combo(['', 'English', 'Spanish', 'Korean'], default_value='', key='-LANG-')],
+                [sg.Text("Transcribe to same language or translate to English (default is transcribe)")],
+                [sg.Combo(['transcribe', 'translate'], default_value='transcribe', key='-TASK-')],
+                [sg.Button(('Run Whisper'), key='-RUN-', visible=False)],
                 [sg.Text(size=(40,1), key='-OUTPUT-', visible=False)],
                 [sg.Multiline(size=(50, 10), echo_stdout_stderr=True, key='-TEST-')],
                 [sg.Button('Quit')]
@@ -34,11 +40,17 @@ def main():
         if event == '-RUN-':
     # Define the whisper command
             mediafile = values['-INPUT-']
+            model = values['-MODEL-']
             outdir = values['-DEST-']
-            command = "whisper {} --model small.en --output_dir {}/ --task transcribe".format(mediafile, outdir)
+            language = values['-LANG-']
+            task = values['-TASK-']
+            if language != "":
+                command = "whisper {} --model {} --output_dir {}/ --language {} --task {}".format(mediafile, model, outdir, language, task)
+            else:
+                command = "whisper {} --model {} --output_dir {}/ --task {}".format(mediafile, model, outdir, task)
     # Do the thing
-            window['-OUTPUT-'].update("Let's run Whisper!")
             window['-OUTPUT-'].update(visible=True)
+            window['-OUTPUT-'].update("Running Whisper, please wait...")
             window['-TEST-'].print('File to process: ' + mediafile)
             window['-TEST-'].print('Running command: \n' + command)
             window['-TEST-'].print('Processing, please wait...')
