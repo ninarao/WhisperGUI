@@ -1,5 +1,8 @@
 # WhisperGUI
 
+A graphic interface for running Whisper locally, with options to select model, language, and task.
+![GUI_2025-02-20_9 18](https://github.com/user-attachments/assets/b6bfda68-5969-4bec-b3dc-9c1f6a993614)
+
 ## Install from source:
 
 * Clone or download WhisperGUI repository, then navigate to the directory
