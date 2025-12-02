@@ -21,7 +21,7 @@ A graphic interface for running Whisper locally, with options to select model, l
     * Unix based:
       `python -m pip install .`
     * Windows:
-      `python -m pip install -e .`
+      cd to lower-level directory first `python -m pip install -e .`
 
 ## Launch from executable file
 * Executable file is in:
