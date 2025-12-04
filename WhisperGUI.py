@@ -1,6 +1,8 @@
 import FreeSimpleGUI as sg
 import subprocess
 import os
+import shlex
+    
 
 def main():
     home_folder = os.path.expanduser("~")
@@ -73,7 +75,10 @@ def main():
             if dest_folder_chosen:
                 window['-DEST-'].update(dest_folder_chosen)
                 window['-RUN-'].update(visible=True)
-        if event == '-RUN-':
+        if event == '-RUN-' and values['-INPUTFILE-'] != '' and values['-INPUTFOLDER-'] != '':
+            window['-OUTPUT-'].update(visible=True)
+            window['-OUTPUT-'].update("choose input file or input folder but not both")
+        elif event == '-RUN-' and values['-INPUTFILE-'] != '' and values['-INPUTFOLDER-'] == '':
         # Define the whisper command
             mediafile = values['-INPUTFILE-']
             model = values['-MODEL-']
@@ -106,7 +111,48 @@ def main():
             window['-TEST-'].print('Processing, please wait...')
             result = subprocess.run(command, shell=True, capture_output=True, text=True)
             window['-TEST-'].update(result)
-
+        elif event == '-RUN-' and values['-INPUTFILE-'] == '' and values['-INPUTFOLDER-'] != '':
+        # Define the whisper command
+#             esc_cmd = '"$file"'
+#             escaped_arg = shlex.quote(esc_cmd)
+            input_folder = values['-INPUTFOLDER-']
+            model = values['-MODEL-']
+            outdir = values['-DEST-']
+            language = values['-LANG-']
+            task = values['-TASK-']
+            if values['-TXT-']:
+                output_format = 'txt'
+            elif values['-VTT-']:
+                output_format = 'vtt'
+            elif values['-SRT-']:
+                output_format = 'srt'
+            elif values['-TSV-']:
+                output_format = 'tsv'
+            elif values['-JSON-']:
+                output_format = 'json'
+            elif values['-ALL-']:
+                output_format = 'all'
+            else:
+                output_format = 'all'
+            window['-OUTPUT-'].update(visible=True)
+            window['-OUTPUT-'].update("Running Whisper, please wait...")
+            
+            file_types = (".mov", ".mp4", ".mp3", ".wav", ".MXF")
+            for file in os.listdir(input_folder):
+                if file.endswith(file_types):
+                    mediafile = os.path.join(input_folder, file)
+                    window['-TEST-'].print('File to process: ' + mediafile)
+                    if language != "":
+                        command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
+                    else:
+                        command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)  
+                    # Do the thing
+                    window['-TEST-'].print('Running command: \n' + command)
+                    window['-TEST-'].print('Processing, please wait...')
+                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    window['-TEST-'].update(result)
+            
+            
     window.close()
 
 if __name__ == '__main__':
