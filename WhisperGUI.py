@@ -1,11 +1,11 @@
 import FreeSimpleGUI as sg
 import subprocess
 import os
-import shlex
     
 
 def main():
     home_folder = os.path.expanduser("~")
+    count = 0
     # Define the window's contents
     layout = [
                 [sg.Text("Single-file input: select media file (ensure file path does not have spaces)")],
@@ -49,6 +49,7 @@ def main():
                          sg.Radio('srt', group_id=1, key='-SRT-'), sg.Radio('tsv', group_id=1, key='-TSV-'),
                          sg.Radio('json', group_id=1, key='-JSON-'), sg.Radio('all', group_id=1, key='-ALL-')],
                 [sg.Button(('Run Whisper'), key='-RUN-', visible=False)],
+                [sg.ProgressBar(count, orientation='h', size=(20, 20), key='-PROGRESSBAR-', visible=False)],
                 [sg.Text(size=(40,1), key='-OUTPUT-', visible=False)],
                 [sg.Multiline(size=(50, 10), echo_stdout_stderr=True, key='-TEST-')],
                 [sg.Button('Quit')]
@@ -75,11 +76,12 @@ def main():
             if dest_folder_chosen:
                 window['-DEST-'].update(dest_folder_chosen)
                 window['-RUN-'].update(visible=True)
+                
         if event == '-RUN-' and values['-INPUTFILE-'] != '' and values['-INPUTFOLDER-'] != '':
             window['-OUTPUT-'].update(visible=True)
             window['-OUTPUT-'].update("choose input file or input folder but not both")
+            
         elif event == '-RUN-' and values['-INPUTFILE-'] != '' and values['-INPUTFOLDER-'] == '':
-        # Define the whisper command
             mediafile = values['-INPUTFILE-']
             model = values['-MODEL-']
             outdir = values['-DEST-']
@@ -103,7 +105,6 @@ def main():
                 command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
             else:
                 command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)
-        # Do the thing
             window['-OUTPUT-'].update(visible=True)
             window['-OUTPUT-'].update("Running Whisper, please wait...")
             window['-TEST-'].print('File to process: ' + mediafile)
@@ -111,10 +112,8 @@ def main():
             window['-TEST-'].print('Processing, please wait...')
             result = subprocess.run(command, shell=True, capture_output=True, text=True)
             window['-TEST-'].update(result)
+            
         elif event == '-RUN-' and values['-INPUTFILE-'] == '' and values['-INPUTFOLDER-'] != '':
-        # Define the whisper command
-#             esc_cmd = '"$file"'
-#             escaped_arg = shlex.quote(esc_cmd)
             input_folder = values['-INPUTFOLDER-']
             model = values['-MODEL-']
             outdir = values['-DEST-']
@@ -136,8 +135,18 @@ def main():
                 output_format = 'all'
             window['-OUTPUT-'].update(visible=True)
             window['-OUTPUT-'].update("Running Whisper, please wait...")
+            window['-PROGRESSBAR-'].update(visible=True)
             
             file_types = (".mov", ".mp4", ".mp3", ".wav", ".MXF")
+            for file in os.listdir(input_folder):
+                if file.endswith(file_types):
+                    count += 1
+            file_num = str(count)
+            window['-TEST-'].print('Number of files to process: ' + file_num)
+            window['-PROGRESSBAR-'].update(max=count)
+            window['-PROGRESSBAR-'].update(visible=True)
+#             window.refresh()
+            files_done = 0
             for file in os.listdir(input_folder):
                 if file.endswith(file_types):
                     mediafile = os.path.join(input_folder, file)
@@ -146,12 +155,14 @@ def main():
                         command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
                     else:
                         command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)  
-                    # Do the thing
                     window['-TEST-'].print('Running command: \n' + command)
                     window['-TEST-'].print('Processing, please wait...')
                     result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    files_done += 1
+                    window['-PROGRESSBAR-'].update(current_count=files_done)
                     window['-TEST-'].update(result)
-            
+            window['-OUTPUT-'].update("Done!")
+
             
     window.close()
 
