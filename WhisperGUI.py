@@ -9,7 +9,7 @@ def main():
     # Define the window's contents
     layout = [
                 [sg.Text("Accepted file types: MOV, MP4, MP3, WAV, MXF, M4A, MPEG, FLAC")],
-                [sg.Text("Single-file input: select media file (ensure file path does not have spaces)")],
+                [sg.Text("Single-file input: select media file")],
                 [sg.Input(key='-INPUTFILE-'), sg.Button('Browse')],
                 [sg.Text("Folder input: select media folder (ensure file path does not have spaces)")],
                 [sg.Input(key='-INPUTFOLDER-'), sg.Button('Media folder')],
