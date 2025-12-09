@@ -8,6 +8,7 @@ def main():
     count = 0
     # Define the window's contents
     layout = [
+                [sg.Text("Accepted file types: MOV, MP4, MP3, WAV, MXF, M4A, MPEG, FLAC")],
                 [sg.Text("Single-file input: select media file (ensure file path does not have spaces)")],
                 [sg.Input(key='-INPUTFILE-'), sg.Button('Browse')],
                 [sg.Text("Folder input: select media folder (ensure file path does not have spaces)")],
@@ -112,6 +113,7 @@ def main():
             window['-TEST-'].print('Processing, please wait...')
             result = subprocess.run(command, shell=True, capture_output=True, text=True)
             window['-TEST-'].update(result)
+            window['-OUTPUT-'].update("Done!")
             
         elif event == '-RUN-' and values['-INPUTFILE-'] == '' and values['-INPUTFOLDER-'] != '':
             input_folder = values['-INPUTFOLDER-']
@@ -137,7 +139,7 @@ def main():
             window['-OUTPUT-'].update("Running Whisper, please wait...")
             window['-PROGRESSBAR-'].update(visible=True)
             
-            file_types = (".mov", ".mp4", ".mp3", ".wav", ".MXF")
+            file_types = (".mov", ".MOV", ".mp4", ".MP4", ".mp3", ".MP3", ".wav", ".WAV", ".mxf", ".MXF", ".m4a", ".M4A", ".mpeg", ".MPEG", ".flac", ".FLAC")
             for file in os.listdir(input_folder):
                 if file.endswith(file_types):
                     count += 1
@@ -145,7 +147,6 @@ def main():
             window['-TEST-'].print('Number of files to process: ' + file_num)
             window['-PROGRESSBAR-'].update(max=count)
             window['-PROGRESSBAR-'].update(visible=True)
-#             window.refresh()
             files_done = 0
             for file in os.listdir(input_folder):
                 if file.endswith(file_types):
