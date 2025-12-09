@@ -103,15 +103,21 @@ def main():
             else:
                 output_format = 'all'
             if language != "":
-                command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
+                command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--language", language, "--task", task]
+                commandStr = " ".join(command)
             else:
-                command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)
+                command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--task", task]
+                commandStr = " ".join(command)
             window['-OUTPUT-'].update(visible=True)
             window['-OUTPUT-'].update("Running Whisper, please wait...")
             window['-TEST-'].print('File to process: ' + mediafile)
-            window['-TEST-'].print('Running command: \n' + command)
+            window['-TEST-'].print('Running command: \n' + commandStr)
             window['-TEST-'].print('Processing, please wait...')
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+            result = subprocess.run(command, capture_output=True, text=True)
             window['-TEST-'].update(result)
             window['-OUTPUT-'].update("Done!")
             
@@ -153,12 +159,16 @@ def main():
                     mediafile = os.path.join(input_folder, file)
                     window['-TEST-'].print('File to process: ' + mediafile)
                     if language != "":
-                        command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
+                        command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--language", language, "--task", task]
                     else:
-                        command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)  
-                    window['-TEST-'].print('Running command: \n' + command)
+                        command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--task", task] 
+                    window['-TEST-'].print('Running command: \n' + commandStr)
                     window['-TEST-'].print('Processing, please wait...')
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    result = subprocess.run(command, capture_output=True, text=True)
                     files_done += 1
                     window['-PROGRESSBAR-'].update(current_count=files_done)
                     window['-TEST-'].update(result)
