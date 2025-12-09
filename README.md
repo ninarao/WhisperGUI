@@ -1,7 +1,9 @@
 # WhisperGUI
 
-A graphic interface for running Whisper locally, with options to select model, language, and task.
-![GUI_2025-02-20_9 18](https://github.com/user-attachments/assets/b6bfda68-5969-4bec-b3dc-9c1f6a993614)
+A graphic interface for running Whisper locally on a single file or folder of files, with options to select model, language, task, and output format.
+
+![GUI_2025-02-20_9 18](https://github.com/user-attachments/assets/d9facbba-4a1e-443c-8ee6-f2881373f962)
+
 
 ## Install from source:
 
@@ -16,12 +18,13 @@ A graphic interface for running Whisper locally, with options to select model, l
     * Unix based:
       `source ./venv/bin/activate`
     * Windows:
+      (this step may need admin permissions)
       `venv\scripts\activate`
 * Install Package
     * Unix based:
       `python -m pip install .`
     * Windows:
-      cd to lower-level directory first `python -m pip install -e .`
+      `python -m pip install -e .`
 
 ## Launch from executable file
 * Executable file is in:
