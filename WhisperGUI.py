@@ -8,6 +8,7 @@ def main():
     count = 0
     # Define the window's contents
     layout = [
+                [sg.Text("Accepted file types: MOV, MP4, MP3, WAV, MXF, M4A, MPEG, FLAC")],
                 [sg.Text("Single-file input: select media file (ensure file path does not have spaces)")],
                 [sg.Input(key='-INPUTFILE-'), sg.Button('Browse')],
                 [sg.Text("Folder input: select media folder (ensure file path does not have spaces)")],
@@ -102,16 +103,23 @@ def main():
             else:
                 output_format = 'all'
             if language != "":
-                command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
+                command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--language", language, "--task", task]
+                commandStr = " ".join(command)
             else:
-                command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)
+                command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--task", task]
+                commandStr = " ".join(command)
             window['-OUTPUT-'].update(visible=True)
             window['-OUTPUT-'].update("Running Whisper, please wait...")
             window['-TEST-'].print('File to process: ' + mediafile)
-            window['-TEST-'].print('Running command: \n' + command)
+            window['-TEST-'].print('Running command: \n' + commandStr)
             window['-TEST-'].print('Processing, please wait...')
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+            result = subprocess.run(command, capture_output=True, text=True)
             window['-TEST-'].update(result)
+            window['-OUTPUT-'].update("Done!")
             
         elif event == '-RUN-' and values['-INPUTFILE-'] == '' and values['-INPUTFOLDER-'] != '':
             input_folder = values['-INPUTFOLDER-']
@@ -137,7 +145,7 @@ def main():
             window['-OUTPUT-'].update("Running Whisper, please wait...")
             window['-PROGRESSBAR-'].update(visible=True)
             
-            file_types = (".mov", ".mp4", ".mp3", ".wav", ".MXF")
+            file_types = (".mov", ".MOV", ".mp4", ".MP4", ".mp3", ".MP3", ".wav", ".WAV", ".mxf", ".MXF", ".m4a", ".M4A", ".mpeg", ".MPEG", ".flac", ".FLAC")
             for file in os.listdir(input_folder):
                 if file.endswith(file_types):
                     count += 1
@@ -145,19 +153,22 @@ def main():
             window['-TEST-'].print('Number of files to process: ' + file_num)
             window['-PROGRESSBAR-'].update(max=count)
             window['-PROGRESSBAR-'].update(visible=True)
-#             window.refresh()
             files_done = 0
             for file in os.listdir(input_folder):
                 if file.endswith(file_types):
                     mediafile = os.path.join(input_folder, file)
                     window['-TEST-'].print('File to process: ' + mediafile)
                     if language != "":
-                        command = "whisper {} --model {} --output_dir {}/ --output_format {} --language {} --task {}".format(mediafile, model, outdir, output_format, language, task)
+                        command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--language", language, "--task", task]
                     else:
-                        command = "whisper {} --model {} --output_dir {}/ --output_format {} --task {}".format(mediafile, model, outdir, output_format, task)  
-                    window['-TEST-'].print('Running command: \n' + command)
+                        command = ["whisper", mediafile, "--model", model,
+                           "--output_dir", outdir, "--output_format", output_format,
+                           "--task", task] 
+                    window['-TEST-'].print('Running command: \n' + commandStr)
                     window['-TEST-'].print('Processing, please wait...')
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    result = subprocess.run(command, capture_output=True, text=True)
                     files_done += 1
                     window['-PROGRESSBAR-'].update(current_count=files_done)
                     window['-TEST-'].update(result)
